@@ -1,0 +1,9 @@
+.container-elastic{
+    width: 100%;
+    max-width: 1700px;
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+    margin-left: auto;
+    box-sizing: border-box;
+}
