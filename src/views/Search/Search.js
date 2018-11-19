@@ -93,9 +93,6 @@ class Search extends Component {
             <IconButton className={classes.backButton} color="inherit" aria-label="Back" onClick={() => this.navigateTo('/')}>
               <NavigateBefore />
             </IconButton>
-            <Typography variant="h6" color="inherit">
-              My Reads :: Search
-            </Typography>
             <div className={classes.grow} />
             <div className={classes.search}>
               <div className={classes.searchIcon}>

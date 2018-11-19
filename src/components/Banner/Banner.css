@@ -20,3 +20,21 @@
     font-weight: 300;
     font-family: "Roboto", "Helvetica", "Arial", sans-serif;
 }
+
+@media screen and (orientation:portrait) {
+    .banner-caption{
+        font-size: 5vw;
+    }
+}
+
+@media (max-width: 1024px) and (orientation: landscape) {
+    .banner-caption{
+        font-size: 5vw;
+    }
+}
+
+@media (max-width: 768px) and (orientation: landscape) {
+    .banner-caption{
+        font-size: 5vw;
+    }
+}

@@ -7,6 +7,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import IconButton from '@material-ui/core/IconButton';
 import Icon from '@material-ui/core/Icon';
+import Divider from '@material-ui/core/Divider';
 
 class ListBooks extends Component {
   static propTypes = {
@@ -45,6 +46,10 @@ class ListBooks extends Component {
           <MenuItem onClick={event => this.handleMoveBookToShelf(event, 'currentlyReading', baggage)}>Current reading</MenuItem>
           <MenuItem onClick={event => this.handleMoveBookToShelf(event, 'wantToRead', baggage)}>Want to read</MenuItem>
           <MenuItem onClick={event => this.handleMoveBookToShelf(event, 'read', baggage)}>Read</MenuItem>
+          <Divider />
+          <MenuItem onClick={event => this.handleMoveBookToShelf(event, '', baggage)}>
+            <Icon style={{ color: 'red' }}>delete_icon</Icon>&nbsp;&nbsp;Remove
+          </MenuItem>
         </Menu>
       </div>
     );
