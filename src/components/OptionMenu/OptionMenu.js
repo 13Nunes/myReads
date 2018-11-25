@@ -10,14 +10,17 @@ import Icon from '@material-ui/core/Icon';
 import Divider from '@material-ui/core/Divider';
 
 class ListBooks extends Component {
+  // @properties
   static propTypes = {
     baggage: PropTypes.object.isRequired,
   }
 
+  // @states
   state = {
     bookElement: null,
   };
 
+  // @methods
   handleOpenMenu = event => {
     this.setState({ bookElement: event.currentTarget });
   };
@@ -38,18 +41,22 @@ class ListBooks extends Component {
     const open = Boolean(bookElement);
 
     return (
-      <div>
+      <div class="menuButton">
         <IconButton color="secondary" aria-label="Edit" onClick={this.handleOpenMenu}>
           <Icon>edit_icon</Icon>
         </IconButton>
         <Menu anchorEl={bookElement} open={open} onClose={this.handleCloseMenu}>
-          <MenuItem onClick={event => this.handleMoveBookToShelf(event, 'currentlyReading', baggage)}>Current reading</MenuItem>
-          <MenuItem onClick={event => this.handleMoveBookToShelf(event, 'wantToRead', baggage)}>Want to read</MenuItem>
-          <MenuItem onClick={event => this.handleMoveBookToShelf(event, 'read', baggage)}>Read</MenuItem>
-          <Divider />
-          <MenuItem onClick={event => this.handleMoveBookToShelf(event, '', baggage)}>
-            <Icon style={{ color: 'red' }}>delete_icon</Icon>&nbsp;&nbsp;Remove
-          </MenuItem>
+          <MenuItem selected={baggage.shelf === 'currentlyReading'} onClick={event => this.handleMoveBookToShelf(event, 'currentlyReading', baggage)}>Current reading</MenuItem>
+          <MenuItem selected={baggage.shelf === 'wantToRead'} onClick={event => this.handleMoveBookToShelf(event, 'wantToRead', baggage)}>Want to read</MenuItem>
+          <MenuItem selected={baggage.shelf === 'read'} onClick={event => this.handleMoveBookToShelf(event, 'read', baggage)}>Read</MenuItem>
+          {(baggage.shelf !== 'none') &&
+            <div>
+              <Divider />
+              <MenuItem onClick={event => this.handleMoveBookToShelf(event, '', baggage)}>
+                <Icon style={{ color: 'red' }}>delete_icon</Icon>&nbsp;&nbsp;Remove
+              </MenuItem>
+            </div>
+          }
         </Menu>
       </div>
     );

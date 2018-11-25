@@ -1,5 +1,7 @@
 // Basic
 import React, { Component } from 'react';
+import PropTypes from 'prop-types'
+import { withRouter } from 'react-router-dom'
 
 // External UI
 import Grid from '@material-ui/core/Grid';
@@ -12,9 +14,8 @@ import { fade } from '@material-ui/core/styles/colorManipulator';
 import IconButton from '@material-ui/core/IconButton';
 import NavigateBefore from '@material-ui/icons/NavigateBefore';
 import SearchIcon from '@material-ui/icons/Search';
-
-// API
-import * as BooksAPI from '../../services/BooksAPI';
+import LinearProgress from '@material-ui/core/LinearProgress';
+import Divider from '@material-ui/core/Divider';
 
 // Components
 import ContainerElastic from '../../components/ContainerElastic/ContainerElastic';
@@ -85,69 +86,22 @@ const styles = theme => ({
 });
 
 class Search extends Component {
-  state = {
-    books: [],
-    query: '',
-    searchResults: [],
-    isLoadingSearch: false
+  // @properties
+  static propTypes = {
+    books: PropTypes.array.isRequired,
   }
 
+  // @methods
   navigateTo = (target) => {
     this.props.history.push(target)
   }
 
-  onSearch = (searchTerm) => {
-    // Quando o termo muda, já limpo o resultado da busca e atualizo o termo
-    this.setState({
-      searchResults: [],
-      query: searchTerm
-    });
-
-    clearTimeout(this.delayTimer);
-    // Se tiver algum termo de busca
-    if (searchTerm !== '') {
-      // Informo que vou carregar
-      this.setState({
-        isLoadingSearch: true
-      });
-      this.delayTimer = setTimeout(() => {
-        BooksAPI.search(this.state.query).then((booksFinded) => {
-          // Informo que a busca terminou
-          this.setState({
-            isLoadingSearch: false
-          });
-          if (booksFinded.length > 0) {
-            // Varro todos os livros encontrados
-            const booksFindedFiltered = booksFinded.map((bookFinded) => {
-              // Seto os livros como none por padrão
-              bookFinded.shelf = 'none';
-              // Confiro nos livros do state se algum foi retornado na busca
-              this.state.books.map((book) => {
-                if (bookFinded.id === book.id) {
-                  // Se um livro do state for igual a um livro retornado na busca, atribuo o shelf correto no resultado da busca
-                  bookFinded.shelf = book.shelf;
-                }
-                return book;
-              });
-              return bookFinded;
-            });
-            this.setState({
-              searchResults: booksFindedFiltered
-            });
-          } else {
-            this.setState({
-              searchResults: []
-            });
-          }
-        });
-      }, 1000);
-    }
+  searchTerm = (event) => {
+    this.props.onSearhTerm(event.target.value);
   }
 
-  changeShelfBook = (bookTochange, shelf) => { }
-
   render() {
-    const { classes } = this.props;
+    const { books, query, loading, classes } = this.props;
 
     return (
       <div className="search">
@@ -167,8 +121,8 @@ class Search extends Component {
                   root: classes.inputRoot,
                   input: classes.inputInput,
                 }}
-                value={this.state.query}
-                onChange={(event) => this.onSearch(event.target.value)}
+                value={query}
+                onChange={event => this.searchTerm(event)}
               />
             </div>
           </Toolbar>
@@ -179,7 +133,17 @@ class Search extends Component {
               <Paper elevation={0}>
                 <div id="search-result-container">
                   <h3>Search result</h3>
-                  <ListBook books={this.state.searchResults} onChangeShelfBook={this.changeShelfBook} />
+                  <Divider />
+                  <ListBook books={books} onChangeShelfBook={this.props.onChangeShelfBook} />
+                  {(loading === true) &&
+                    <div className="loading">
+                      <span>Loading...</span><br /><br />
+                      <LinearProgress />
+                    </div>
+                  }
+                  {(books.length === 0 && loading === false) &&
+                    <div className="no-results">No results.</div>
+                  }
                 </div>
               </Paper>
             </Grid>
@@ -190,4 +154,4 @@ class Search extends Component {
   }
 }
 
-export default withStyles(styles)(Search);
+export default withRouter(withStyles(styles)(Search));

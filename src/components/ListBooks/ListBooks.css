@@ -32,7 +32,8 @@
 
 .bookCard .content .actions{
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .bookCard .content .details h2{

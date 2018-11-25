@@ -7,6 +7,7 @@ import ListBook from '../../components/ListBooks/ListBooks';
 
 // Class
 class CurrentlyReadingPanel extends Component {
+  // @properties
   static propTypes = {
     books: PropTypes.array.isRequired,
   }

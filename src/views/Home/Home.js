@@ -1,5 +1,7 @@
 // Basic
 import React, { Component } from 'react'
+import PropTypes from 'prop-types'
+import { withRouter } from 'react-router-dom'
 
 // External UI
 import Grid from '@material-ui/core/Grid';
@@ -15,9 +17,6 @@ import Icon from '@material-ui/core/Icon';
 // Assets
 import './Home.css';
 
-// API
-import * as BooksAPI from '../../services/BooksAPI';
-
 // Components
 import CurrentlyReadingPanel from '../../components/CurrentlyReadingPanel/CurrentlyReadingPanel';
 import WantToReadPanel from '../../components/WantToReadPanel/WantToReadPanel';
@@ -26,20 +25,17 @@ import Banner from '../../components/Banner/Banner';
 import ContainerElastic from '../../components/ContainerElastic/ContainerElastic';
 
 class Home extends Component {
+  // @properties
+  static propTypes = {
+    books: PropTypes.array.isRequired,
+  }
+
+  // @states
   state = {
-    books: [],
     tabSelected: 0,
   }
 
-  componentDidMount() {
-    // Populate application on init
-    BooksAPI.getAll().then((books) => {
-      this.setState(() => ({
-        books
-      }))
-    })
-  }
-
+  // @methods
   navigateTo = (target) => {
     this.props.history.push(target)
   }
@@ -49,36 +45,9 @@ class Home extends Component {
     this.setState({ tabSelected });
   };
 
-  changeShelfBook = (bookTochange, shelf) => {
-    // Init
-    let isNewBookOnShelf = false;
-
-    // Update book on API
-    BooksAPI.update(bookTochange, shelf).then((data) => {
-      // Check book on shelf and prepare book data
-      const books = this.state.books.map((book) => {
-        if (book.id === bookTochange.id) {
-          book.shelf = shelf;
-          isNewBookOnShelf = true;
-        }
-        return book;
-      });
-
-      // If is new on shelf (Comming from search)
-      if (isNewBookOnShelf === false) {
-        bookTochange.shelf = shelf;
-        books.push(bookTochange);
-      }
-
-      // Update book data
-      this.setState({
-        books
-      });
-    })
-  }
-
   render() {
-    const { books, tabSelected } = this.state;
+    const { books } = this.props
+    const { tabSelected } = this.state;
 
     return (
       <div className="home">
@@ -104,9 +73,9 @@ class Home extends Component {
                   <Tab label="Want to read" />
                   <Tab label="Read" />
                 </Tabs>
-                {tabSelected === 0 && <CurrentlyReadingPanel books={books} onChangeShelfBook={this.changeShelfBook} />}
-                {tabSelected === 1 && <WantToReadPanel books={books} onChangeShelfBook={this.changeShelfBook} />}
-                {tabSelected === 2 && <ReadPanel books={books} onChangeShelfBook={this.changeShelfBook} />}
+                {tabSelected === 0 && <CurrentlyReadingPanel books={books} onChangeShelfBook={this.props.onChangeShelfBook} />}
+                {tabSelected === 1 && <WantToReadPanel books={books} onChangeShelfBook={this.props.onChangeShelfBook} />}
+                {tabSelected === 2 && <ReadPanel books={books} onChangeShelfBook={this.props.onChangeShelfBook} />}
               </Paper>
             </Grid>
           </Grid>
@@ -116,4 +85,4 @@ class Home extends Component {
   }
 }
 
-export default Home;
+export default withRouter(Home);

@@ -1,36 +1,41 @@
 // Basic
 import React, { Component } from 'react'
+import { BrowserRouter, Route } from 'react-router-dom';
 
-// External UI
-import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import IconButton from '@material-ui/core/IconButton';
-import Icon from '@material-ui/core/Icon';
-
-// Assets
-import './Home.css';
+// Views
+import Home from '../Home/Home';
+import Search from '../Search/Search';
 
 // API
 import * as BooksAPI from '../../services/BooksAPI';
 
-// Components
-import CurrentlyReadingPanel from '../../components/CurrentlyReadingPanel/CurrentlyReadingPanel';
-import WantToReadPanel from '../../components/WantToReadPanel/WantToReadPanel';
-import ReadPanel from '../../components/ReadPanel/ReadPanel';
-import Banner from '../../components/Banner/Banner';
-import ContainerElastic from '../../components/ContainerElastic/ContainerElastic';
+// UI
+import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+import lightBlue from '@material-ui/core/colors/lightBlue';
 
-class Home extends Component {
+// UI :: Set pallete
+const theme = createMuiTheme({
+  palette: {
+    primary: {
+      main: '#135D90',
+    },
+    secondary: lightBlue,
+  },
+  typography: {
+    useNextVariants: true,
+  },
+});
+
+class App extends Component {
+  // @states
   state = {
     books: [],
-    tabSelected: 0,
+    query: '',
+    searchResults: [],
+    isLoadingSearch: false
   }
 
+  // @listening
   componentDidMount() {
     // Populate application on init
     BooksAPI.getAll().then((books) => {
@@ -40,15 +45,7 @@ class Home extends Component {
     })
   }
 
-  navigateTo = (target) => {
-    this.props.history.push(target)
-  }
-
-  handleTabChange = (event, tabSelected) => {
-    // Set current tab selected
-    this.setState({ tabSelected });
-  };
-
+  // @methods
   changeShelfBook = (bookTochange, shelf) => {
     // Init
     let isNewBookOnShelf = false;
@@ -77,43 +74,81 @@ class Home extends Component {
     })
   }
 
+  searchTerm = (searchTerm) => {
+    // Reset
+    this.setState({
+      searchResults: [],
+      query: searchTerm,
+      isLoadingSearch: false
+    });
+
+    // Clear debouncing
+    clearTimeout(this.debouncing);
+
+    // Check term
+    if (searchTerm !== '') {
+      // Show loading
+      this.setState({
+        isLoadingSearch: true
+      });
+
+      // Request search
+      this.debouncing = setTimeout(() => {
+        BooksAPI.search(this.state.query).then((booksFound) => {
+          // Hide loading
+          this.setState({
+            isLoadingSearch: false
+          });
+
+          // If it has results
+          if (booksFound.length > 0) {
+            // Iterate result
+            const booksFoundFiltered = booksFound.map((bookFound) => {
+              // Set shelf as 'None'
+              bookFound.shelf = 'none';
+
+              // Match books
+              this.state.books.map((book) => {
+                if (bookFound.id === book.id) {
+                  // Set correct shelf
+                  bookFound.shelf = book.shelf;
+                }
+                return book;
+              });
+              return bookFound;
+            });
+
+            // Update search result (it has results)
+            this.setState({
+              searchResults: booksFoundFiltered
+            });
+          } else {
+            // Update search result (no results)
+            this.setState({
+              searchResults: []
+            });
+          }
+        });
+      }, 1500);
+    }
+  }
+
   render() {
-    const { books, tabSelected } = this.state;
+    const { books, query, searchResults, isLoadingSearch } = this.state;
 
     return (
-      <div className="home">
-        <AppBar position="static" color="primary">
-          <Toolbar>
-            <Typography variant="h6" color="inherit">
-              My Reads
-            </Typography>
-            <div className="navigation">
-              <IconButton color="inherit" aria-label="Search" onClick={() => this.navigateTo('/search')}>
-                <Icon>search_icon</Icon>
-              </IconButton>
-            </div>
-          </Toolbar>
-        </AppBar>
-        <Banner /><br />
-        <ContainerElastic>
-          <Grid container spacing={0}>
-            <Grid item xs={12}>
-              <Paper elevation={0}>
-                <Tabs value={tabSelected} onChange={this.handleTabChange}>
-                  <Tab label="Currently reading" />
-                  <Tab label="Want to read" />
-                  <Tab label="Read" />
-                </Tabs>
-                {tabSelected === 0 && <CurrentlyReadingPanel books={books} onChangeShelfBook={this.changeShelfBook} />}
-                {tabSelected === 1 && <WantToReadPanel books={books} onChangeShelfBook={this.changeShelfBook} />}
-                {tabSelected === 2 && <ReadPanel books={books} onChangeShelfBook={this.changeShelfBook} />}
-              </Paper>
-            </Grid>
-          </Grid>
-        </ContainerElastic>
-      </div>
+      <MuiThemeProvider theme={theme}>
+        <BrowserRouter>
+          <Route path="/" exact={true} render={() => (
+            <Home books={books} onChangeShelfBook={this.changeShelfBook} />
+          )} />
+          <Route path="/search" render={() => (
+            <Search books={searchResults} query={query} loading={isLoadingSearch} onChangeShelfBook={this.changeShelfBook} onSearhTerm={this.searchTerm} />
+          )} />
+        </BrowserRouter>
+      </MuiThemeProvider>
     );
   }
 }
 
-export default Home;
+export default App;

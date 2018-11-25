@@ -5,7 +5,7 @@ import './Banner.css';
 const Banner = () => (
     <div className="banner">
         <img src={image} alt="Banner" />
-        <div className="banner-caption overlay">What are you is reading now?</div>
+        <div className="banner-caption overlay">What are you reading now?</div>
     </div>
 );
 

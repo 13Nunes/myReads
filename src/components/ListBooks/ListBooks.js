@@ -6,6 +6,8 @@ import PropTypes from 'prop-types'
 import Card from '@material-ui/core/Card';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
+import Chip from '@material-ui/core/Chip';
+import FaceIcon from '@material-ui/icons/Book';
 
 // Assets
 import './ListBooks.css';
@@ -15,8 +17,19 @@ import ImageNotAvailable from '../../assets/images/not-available.jpg'
 import OptionMenu from '../../components/OptionMenu/OptionMenu';
 
 class ListBooks extends Component {
+  // @properties
   static propTypes = {
     books: PropTypes.array.isRequired,
+  }
+
+  // @methods
+  friendlyShelfLabel(shelfStatus) {
+    switch (shelfStatus) {
+      case 'currentlyReading': return 'Currently Reading';
+      case 'wantToRead': return ' Want to read';
+      case 'read': return 'Read';
+      default: return 'None';
+    }
   }
 
   render() {
@@ -42,10 +55,11 @@ class ListBooks extends Component {
                     {book.subtitle}
                   </Typography>
                   <Typography variant="body1" gutterBottom>
-                    Author(s): {book.authors ? book.authors.join(', ') : 'Unknown Author'}
+                    Author(s): {book.authors ? book.authors.join(', ') : 'Unknown author'}
                   </Typography>
                 </div>
                 <div className="actions">
+                  <Chip color="secondary" icon={<FaceIcon />} variant="outlined" label={this.friendlyShelfLabel(book.shelf)} />
                   <OptionMenu baggage={book} onChangeShelfBook={this.props.onChangeShelfBook}></OptionMenu>
                 </div>
               </div>

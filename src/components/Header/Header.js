@@ -1,6 +1,8 @@
+// Basic
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 
+// Assets
 import './Header.css';
 import logo from '../../assets/images/logo.svg';
 
