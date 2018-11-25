@@ -138,7 +138,7 @@ class App extends Component {
 
     return (
       <MuiThemeProvider theme={theme}>
-        <BrowserRouter>
+        <BrowserRouter basename={process.env.PUBLIC_URL}>
           <Route path="/" exact={true} render={() => (
             <Home books={books} onChangeShelfBook={this.changeShelfBook} />
           )} />
