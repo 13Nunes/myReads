@@ -2,9 +2,10 @@
 import React, { Component } from 'react';
 
 // External UI
+import Grid from '@material-ui/core/Grid';
+import Paper from '@material-ui/core/Paper';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
 import InputBase from '@material-ui/core/InputBase';
 import { withStyles } from '@material-ui/core/styles';
 import { fade } from '@material-ui/core/styles/colorManipulator';
@@ -13,11 +14,16 @@ import NavigateBefore from '@material-ui/icons/NavigateBefore';
 import SearchIcon from '@material-ui/icons/Search';
 
 // API
-// import * as BooksAPI from '../../services/BooksAPI';
+import * as BooksAPI from '../../services/BooksAPI';
+
+// Components
+import ContainerElastic from '../../components/ContainerElastic/ContainerElastic';
+import ListBook from '../../components/ListBooks/ListBooks';
 
 // Assets
 import './Search.css';
 
+// Toobar custom style
 const styles = theme => ({
   root: {
     width: '100%',
@@ -79,9 +85,66 @@ const styles = theme => ({
 });
 
 class Search extends Component {
+  state = {
+    books: [],
+    query: '',
+    searchResults: [],
+    isLoadingSearch: false
+  }
+
   navigateTo = (target) => {
     this.props.history.push(target)
   }
+
+  onSearch = (searchTerm) => {
+    // Quando o termo muda, já limpo o resultado da busca e atualizo o termo
+    this.setState({
+      searchResults: [],
+      query: searchTerm
+    });
+
+    clearTimeout(this.delayTimer);
+    // Se tiver algum termo de busca
+    if (searchTerm !== '') {
+      // Informo que vou carregar
+      this.setState({
+        isLoadingSearch: true
+      });
+      this.delayTimer = setTimeout(() => {
+        BooksAPI.search(this.state.query).then((booksFinded) => {
+          // Informo que a busca terminou
+          this.setState({
+            isLoadingSearch: false
+          });
+          if (booksFinded.length > 0) {
+            // Varro todos os livros encontrados
+            const booksFindedFiltered = booksFinded.map((bookFinded) => {
+              // Seto os livros como none por padrão
+              bookFinded.shelf = 'none';
+              // Confiro nos livros do state se algum foi retornado na busca
+              this.state.books.map((book) => {
+                if (bookFinded.id === book.id) {
+                  // Se um livro do state for igual a um livro retornado na busca, atribuo o shelf correto no resultado da busca
+                  bookFinded.shelf = book.shelf;
+                }
+                return book;
+              });
+              return bookFinded;
+            });
+            this.setState({
+              searchResults: booksFindedFiltered
+            });
+          } else {
+            this.setState({
+              searchResults: []
+            });
+          }
+        });
+      }, 1000);
+    }
+  }
+
+  changeShelfBook = (bookTochange, shelf) => { }
 
   render() {
     const { classes } = this.props;
@@ -104,10 +167,24 @@ class Search extends Component {
                   root: classes.inputRoot,
                   input: classes.inputInput,
                 }}
+                value={this.state.query}
+                onChange={(event) => this.onSearch(event.target.value)}
               />
             </div>
           </Toolbar>
         </AppBar>
+        <ContainerElastic>
+          <Grid container spacing={0}>
+            <Grid item xs={12}>
+              <Paper elevation={0}>
+                <div id="search-result-container">
+                  <h3>Search result</h3>
+                  <ListBook books={this.state.searchResults} onChangeShelfBook={this.changeShelfBook} />
+                </div>
+              </Paper>
+            </Grid>
+          </Grid>
+        </ContainerElastic>
       </div>
     );
   }

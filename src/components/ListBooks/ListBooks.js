@@ -9,6 +9,7 @@ import Typography from '@material-ui/core/Typography';
 
 // Assets
 import './ListBooks.css';
+import ImageNotAvailable from '../../assets/images/not-available.jpg'
 
 // Components
 import OptionMenu from '../../components/OptionMenu/OptionMenu';
@@ -30,7 +31,7 @@ class ListBooks extends Component {
           <Grid item xs={12} sm={6} xl={3} key={book.id}>
             <Card className="bookCard">
               <div className="image">
-                <img src={book.imageLinks.smallThumbnail} alt={book.title} />
+                <img src={book.imageLinks ? book.imageLinks.smallThumbnail : ImageNotAvailable} alt={book.title} />
               </div>
               <div className="content">
                 <div className="details">
@@ -41,7 +42,7 @@ class ListBooks extends Component {
                     {book.subtitle}
                   </Typography>
                   <Typography variant="body1" gutterBottom>
-                    Author(s): {book.authors.join(', ')}
+                    Author(s): {book.authors ? book.authors.join(', ') : 'Unknown Author'}
                   </Typography>
                 </div>
                 <div className="actions">
