@@ -38,11 +38,8 @@ class App extends Component {
   // @listening
   componentDidMount() {
     // Populate application on init
-    BooksAPI.getAll().then((books) => {
-      this.setState(() => ({
-        books
-      }))
-    })
+    const books = await BooksAPI.getAll();
+    this.setState({ books });
   }
 
   // @methods
