@@ -51,13 +51,12 @@ class App extends Component {
     // Update book on API
     BooksAPI.update(bookTochange, shelf).then((data) => {
       // Check book on shelf and prepare book data
-      searchResults.map((book) => {
+      searchResults.forEach((book) => {
         if (book.id === bookTochange.id) {
           book.shelf = shelf;
-          isNewBookOnShelf = true;
         }
-        return book;
-      });
+      })
+
       books.map((book) => {
         if (book.id === bookTochange.id) {
           book.shelf = shelf;

@@ -52,7 +52,7 @@ class ListBooks extends Component {
           {(baggage.shelf !== 'none') &&
             <div>
               <Divider />
-              <MenuItem onClick={event => this.handleMoveBookToShelf(event, '', baggage)}>
+              <MenuItem onClick={event => this.handleMoveBookToShelf(event, 'none', baggage)}>
                 <Icon style={{ color: 'red' }}>delete_icon</Icon>&nbsp;&nbsp;Remove
               </MenuItem>
             </div>
