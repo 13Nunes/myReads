@@ -36,7 +36,7 @@ class App extends Component {
   }
 
   // @listening
-  componentDidMount() {
+  async componentDidMount() {
     // Populate application on init
     const books = await BooksAPI.getAll();
     this.setState({ books });
@@ -51,14 +51,14 @@ class App extends Component {
     // Update book on API
     BooksAPI.update(bookTochange, shelf).then((data) => {
       // Check book on shelf and prepare book data
-      books.map((book) => {
+      searchResults.map((book) => {
         if (book.id === bookTochange.id) {
           book.shelf = shelf;
           isNewBookOnShelf = true;
         }
         return book;
       });
-      searchResults.map((book) => {
+      books.map((book) => {
         if (book.id === bookTochange.id) {
           book.shelf = shelf;
           isNewBookOnShelf = true;
