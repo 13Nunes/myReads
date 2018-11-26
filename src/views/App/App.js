@@ -49,11 +49,19 @@ class App extends Component {
   changeShelfBook = (bookTochange, shelf) => {
     // Init
     let isNewBookOnShelf = false;
+    const { books, searchResults } = this.state;
 
     // Update book on API
     BooksAPI.update(bookTochange, shelf).then((data) => {
       // Check book on shelf and prepare book data
-      const books = this.state.books.map((book) => {
+      books.map((book) => {
+        if (book.id === bookTochange.id) {
+          book.shelf = shelf;
+          isNewBookOnShelf = true;
+        }
+        return book;
+      });
+      searchResults.map((book) => {
         if (book.id === bookTochange.id) {
           book.shelf = shelf;
           isNewBookOnShelf = true;
@@ -69,7 +77,8 @@ class App extends Component {
 
       // Update book data
       this.setState({
-        books
+        books,
+        searchResults
       });
     })
   }
@@ -108,13 +117,13 @@ class App extends Component {
               bookFound.shelf = 'none';
 
               // Match books
-              this.state.books.map((book) => {
+              this.state.books.forEach((book) => {
                 if (bookFound.id === book.id) {
                   // Set correct shelf
                   bookFound.shelf = book.shelf;
                 }
-                return book;
-              });
+              })
+
               return bookFound;
             });
 

@@ -41,7 +41,7 @@ class ListBooks extends Component {
     const open = Boolean(bookElement);
 
     return (
-      <div class="menuButton">
+      <div className="menuButton">
         <IconButton color="secondary" aria-label="Edit" onClick={this.handleOpenMenu}>
           <Icon>edit_icon</Icon>
         </IconButton>

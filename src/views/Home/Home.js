@@ -18,9 +18,7 @@ import Icon from '@material-ui/core/Icon';
 import './Home.css';
 
 // Components
-import CurrentlyReadingPanel from '../../components/CurrentlyReadingPanel/CurrentlyReadingPanel';
-import WantToReadPanel from '../../components/WantToReadPanel/WantToReadPanel';
-import ReadPanel from '../../components/ReadPanel/ReadPanel';
+import Panel from '../../components/Panel/Panel';
 import Banner from '../../components/Banner/Banner';
 import ContainerElastic from '../../components/ContainerElastic/ContainerElastic';
 
@@ -73,9 +71,9 @@ class Home extends Component {
                   <Tab label="Want to read" />
                   <Tab label="Read" />
                 </Tabs>
-                {tabSelected === 0 && <CurrentlyReadingPanel books={books} onChangeShelfBook={this.props.onChangeShelfBook} />}
-                {tabSelected === 1 && <WantToReadPanel books={books} onChangeShelfBook={this.props.onChangeShelfBook} />}
-                {tabSelected === 2 && <ReadPanel books={books} onChangeShelfBook={this.props.onChangeShelfBook} />}
+                {tabSelected === 0 && <Panel title="Currently Reading" filter="currentlyReading" books={books} onChangeShelfBook={this.props.onChangeShelfBook} />}
+                {tabSelected === 1 && <Panel title="Want to read" filter="wantToRead" books={books} onChangeShelfBook={this.props.onChangeShelfBook} />}
+                {tabSelected === 2 && <Panel title="Read" filter="read" books={books} onChangeShelfBook={this.props.onChangeShelfBook} />}
               </Paper>
             </Grid>
           </Grid>
